@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/dafeiji.css" />
+		<script src="js/GameEngine.js"></script>
+		<script src="js/MyPlane.js"></script>
+		<script src="js/Bullet.js"></script>
+		<script src="js/Enemy.js"></script>
+		<script src="js/common.js"></script>
+		<script>
+			onload = function(){
+                /*
+                游戏引擎启动
+                 */
+               var list = document.getElementById("list");
+               var lis = document.querySelectorAll("#list li");
+               var interval = 0;
+               for(var i=0;i<lis.length;i++){//对于游戏难度进行选择，选择完毕以后，进入游戏，移除当前的所有li
+                   lis[i].onclick = function () {
+                       interval = this.value;
+                       list.parentNode.removeChild(list);
+                       gameEngine.interval = interval;//确定子弹间隙
+                       gameEngine.start();//游戏引擎启动
+                   }
+               }
+              	var WIDTH = 480,HEIGHT = 650;
+				var canvas = document.getElementById("canvas");
+				 ctx = canvas.getContext("2d");
+				var bg = new Image();
+				 bg.src = "images/bg.jpg";
+				var SKY = {image:bg,width:480,height:650,speed:20};
+				var Sky = function(config){
+						 	this.bg = config.image;
+						 	this.width = config.width;
+						 	this.height = config.height;
+						 	this.speed = 1000 / config.speed;
+						 	this.x1 = 0;
+						 	this.y1 = 0;
+						 	this.x2 = 0;
+						 	this.y2 = -this.height;
+						 	this.lastTime = 0;
+						 	/*
+							移动背景纵坐标
+						 	*/
+						 	this.step = function(){
+						 		//判断是否到达天空移动的时间
+						 		var currentTime = new Date().getTime();
+						 		if(currentTime-this.lastTime>=this.speed){
+						 			this.y1++;
+						 			this.y2++;
+						 			this.lastTime=new Date().getTime();
+						 		}
+						 		if(this.y1>=this.height){
+						 			this.y1 = -this.height;}
+						 		if(this.y2>= this.height){
+						 			this.y2 = -this.height;
+					 		}
+					 	}
+					 	/*
+					 	绘制天空图像
+					 	ctx：canvas绘图上下文
+					 	*/
+					 	this.paint = function(ctx){
+								ctx.drawImage(this.bg,this.x1,this.y1);
+								ctx.drawImage(this.bg,this.x2,this.y2);
+					 	}
+									 }
+									 var sky = new Sky(SKY);
+									setInterval(function(){
+									 		sky.step();
+									 		sky.paint(ctx);
+							},1000/10)
+					var score = document.getElementById("score");	
+					list.onclick=function(){
+						setInterval(function(){
+							score.style.display="block";
+						},3500);
+					}
+					var start = document.getElementById("start");
+					var img = document.getElementById("img");
+					start.onclick=function(){
+						list.style.display="block";
+						start.style.display="none";
+						img.style.display="none";
+					}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="body_main" class="main">
+			<img src="images/logo.png" id="img" alt="">
+			<div id="start">开始游戏</div>
+            <div id="score">0</div>
+			<ul id="list">
+				<li value="1000">超级困难</li>
+				<li value="500">非常困难</li>
+				<li value="150">比较困难</li>
+				<li value="50">春哥附体</li>
+			</ul>
+			<canvas id = "canvas" width = "480" height = "650"></canvas>
+		</div>
+	</body>
+</html>
